@@ -26,8 +26,11 @@ manager.register("Boolean", {
 });
 
 // 校验并获得参数值
-const { ok, message, value } = manager.value("Boolean", "boolean");
-// => { ok: true, message: "success", value: boolean }
+const { ok, message, value } = manager.value("Boolean", "true");
+// => { ok: true, message: "success", value: true }
+
+const { ok, message, value } = manager.value("TrimString", " hello a ");
+// => { ok: true, message: "success", value: "hello a" }
 ```
 
 ## License
