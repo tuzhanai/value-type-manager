@@ -1,0 +1,32 @@
+{
+  "name": "@tuzhanai/value-type-manager",
+  "version": "1.0.0",
+  "description": "数据类型格式化与校验管理器",
+  "main": "dist/lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tuzhanai/value-type-manager.git"
+  },
+  "keywords": [
+    "type",
+    "value",
+    "manager",
+    "scheme"
+  ],
+  "author": "Zongmin Lei <leizongmin@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tuzhanai/value-type-manager/issues"
+  },
+  "homepage": "https://github.com/tuzhanai/value-type-manager#readme",
+  "devDependencies": {
+    "ts-node": "^7.0.1",
+    "typescript": "^3.0.3"
+  },
+  "dependencies": {
+    "@types/node": "^10.9.4"
+  }
+}
