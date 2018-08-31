@@ -1,6 +1,6 @@
 {
   "name": "@tuzhanai/value-type-manager",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "数据类型格式化与校验管理器",
   "main": "dist/lib/index.js",
   "typings": "dist/lib/index.d.ts",
