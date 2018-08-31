@@ -55,7 +55,7 @@ export class ValueTypeItem {
    * @param input 输入值
    * @param params 类型选项
    */
-  public check(input: any, params: any): ICheckResult {
+  public check(input: any, params: any = {}): ICheckResult {
     if (!this.options.checker) return { ok: true, message: "success" };
     const checker = this.options.checker;
     try {
@@ -88,14 +88,19 @@ export class ValueTypeItem {
    * 检查参数，如果参数默认开启格式化，则格式化
    * @param input
    * @param params 类型选项
+   * @param format 是否格式化，如果为undefined则使用默认配置
    */
-  public value(input: any, params: any): IValueResult {
+  public value(input: any, params?: any, format?: boolean): IValueResult {
     try {
       input = this.parse(input);
       const { ok, message } = this.check(input, params);
       if (!ok) return { ok, message, value: input };
-      const value = this.format(input);
-      return { ok, message, value };
+      if (typeof format === "undefined") format = this.options.isDefaultFormat;
+      if (format) {
+        const value = this.format(input);
+        return { ok, message, value };
+      }
+      return { ok, message, value: input };
     } catch (err) {
       return { ok: false, message: err.message, value: input };
     }
@@ -116,19 +121,35 @@ export class ValueTypeManager {
     }
   }
 
+  /**
+   * 注册类型
+   * @param type 类型名称
+   * @param options 选项
+   */
   public register(type: string, options: IValueTypeOptions): this {
     this.map.set(type, new ValueTypeItem(options));
     return this;
   }
 
+  /**
+   * 获取指定类型
+   * @param type 类型名称
+   */
   public get(type: string): ValueTypeItem {
     const t = this.map.get(type);
     assert.ok(t);
     return t!;
   }
 
-  public value(type: string, input: any, params: any): IValueResult {
-    return this.get(type).value(input, params);
+  /**
+   * 获取指定类型值
+   * @param type 类型名称
+   * @param input 输入值
+   * @param params 类型参数
+   * @param format 是否格式化
+   */
+  public value(type: string, input: any, params?: any, format?: boolean): IValueResult {
+    return this.get(type).value(input, params, format);
   }
 }
 
