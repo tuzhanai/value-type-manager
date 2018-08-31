@@ -88,7 +88,7 @@ describe("test ValueTypeManager", function() {
   }
 
   A.forEach((item: any) => {
-    it(`TYPES -${item[0]}s (${item[1]}) success`, function() {
+    it(`Builtin - ${item[0]} (${item[1]}) success`, function() {
       const type = item[0];
       const input = item[1];
       const params = item[2];
@@ -103,7 +103,7 @@ describe("test ValueTypeManager", function() {
   });
 
   B.forEach((item: any) => {
-    it(`TYPES -${item[0]}s (${item[1]}) failure`, function() {
+    it(`Builtin - ${item[0]} (${item[1]}) failure`, function() {
       const type = item[0];
       const input = item[1];
       const params = item[2];
