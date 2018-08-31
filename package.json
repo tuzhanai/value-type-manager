@@ -3,8 +3,13 @@
   "version": "1.0.0",
   "description": "数据类型格式化与校验管理器",
   "main": "dist/lib/index.js",
+  "typings": "dist/lib/index.d.ts",
+  "files": [
+    "dist/lib"
+  ],
   "scripts": {
-    "test": "mocha --require ts-node/register src/test/**/*.spec.ts"
+    "test": "mocha --require ts-node/register src/test/**/*.spec.ts",
+    "prepublish": "npm test && rm -rf dist && tsc"
   },
   "repository": {
     "type": "git",
