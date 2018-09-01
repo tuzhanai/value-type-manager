@@ -151,6 +151,14 @@ export class ValueTypeManager {
   public value(type: string, input: any, params?: any, format?: boolean): IValueResult {
     return this.get(type).value(input, params, format);
   }
+
+  /**
+   * 遍历类型
+   * @param iter 迭代函数
+   */
+  public forEach(iter: (value: ValueTypeItem, key: string, map: Map<string, ValueTypeItem>) => void) {
+    return this.map.forEach(iter);
+  }
 }
 
 export default ValueTypeManager;
