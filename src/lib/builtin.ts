@@ -37,6 +37,7 @@ export default function registerBuiltinTypes(type: ValueTypeManager) {
     formatter: (v: string) => v.trim(),
     description: "自动去首尾空格的字符串",
     tsType: "string",
+    isBuiltin: true,
     isDefaultFormat: true,
   });
 
