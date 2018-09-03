@@ -142,6 +142,14 @@ export class ValueTypeManager {
   }
 
   /**
+   * 判断是否存在指定类型
+   * @param type 类型名称
+   */
+  public has(type: string): boolean {
+    return this.map.has(type);
+  }
+
+  /**
    * 获取指定类型值
    * @param type 类型名称
    * @param input 输入值
