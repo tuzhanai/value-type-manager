@@ -33,12 +33,23 @@ export interface IValueTypeCheckResult {
   ok: boolean;
   /** 如果失败，则表示出错信息 */
   message: string;
+  /** 错误代码 */
+  code?: string;
 }
 
 export interface IValueResult extends IValueTypeCheckResult {
   /** 值 */
   value: any;
 }
+
+/** 类型检查出错 */
+export const CODE_CHECK_FAILURE = "CHECK_FAILURE";
+/** 类型解析出错 */
+export const CODE_PARSE_FAILURE = "PARSE_FAILURE";
+/** 类型格式化出错 */
+export const CODE_FORMAT_FAILURE = "FORMAT_FAILURE";
+/** 未知错误 */
+export const CODE_UNKNOWN_FAILURE = "UNKNOWN_FAILURE";
 
 export class ValueTypeItem {
   constructor(protected readonly options: IValueTypeOptions) {}
@@ -60,7 +71,7 @@ export class ValueTypeItem {
     const checker = this.options.checker;
     try {
       const ok = checker instanceof RegExp ? checker.test(input) : checker(input, params);
-      return { ok, message: ok ? "success" : "failure" };
+      return { ok, message: ok ? "success" : "failure", code: ok ? undefined : CODE_CHECK_FAILURE };
     } catch (err) {
       return { ok: false, message: err.message };
     }
@@ -92,17 +103,25 @@ export class ValueTypeItem {
    */
   public value(input: any, params?: any, format?: boolean): IValueResult {
     try {
-      input = this.parse(input);
+      try {
+        input = this.parse(input);
+      } catch (err) {
+        return { ok: false, message: err.message, code: CODE_PARSE_FAILURE, value: input };
+      }
       const { ok, message } = this.check(input, params);
-      if (!ok) return { ok, message, value: input };
+      if (!ok) return { ok: false, message, code: CODE_CHECK_FAILURE, value: input };
       if (typeof format === "undefined") format = this.options.isDefaultFormat;
       if (format) {
-        const value = this.format(input);
-        return { ok, message, value };
+        try {
+          const value = this.format(input);
+          return { ok, message, value };
+        } catch (err) {
+          return { ok: false, message: err.message, code: CODE_FORMAT_FAILURE, value: input };
+        }
       }
       return { ok, message, value: input };
     } catch (err) {
-      return { ok: false, message: err.message, value: input };
+      return { ok: false, message: err.message, code: CODE_UNKNOWN_FAILURE, value: input };
     }
   }
 }

@@ -87,30 +87,75 @@ describe("test ValueTypeManager", function() {
     return manager.value(type, input, params, format);
   }
 
-  A.forEach((item: any) => {
-    it(`Builtin - ${item[0]} (${item[1]}) success`, function() {
-      const type = item[0];
-      const input = item[1];
-      const params = item[2];
-      const expected = item[3];
-      const { ok, message, value } = getValue(type, input, params);
-      // console.log(...item);
-      // console.log("----", ok, message, value);
-      expect(ok).to.equal(true);
-      expect(message).to.equal("success");
-      expect(value).to.deep.equal(expected);
+  describe("Success", function() {
+    A.forEach((item: any) => {
+      it(`Builtin - ${item[0]} (${item[1]}) success`, function() {
+        const type = item[0];
+        const input = item[1];
+        const params = item[2];
+        const expected = item[3];
+        const { ok, message, value } = getValue(type, input, params);
+        // console.log(...item);
+        // console.log("----", ok, message, value);
+        expect(ok).to.equal(true);
+        expect(message).to.equal("success");
+        expect(value).to.deep.equal(expected);
+      });
     });
   });
 
-  B.forEach((item: any) => {
-    it(`Builtin - ${item[0]} (${item[1]}) failure`, function() {
-      const type = item[0];
-      const input = item[1];
-      const params = item[2];
-      const { ok } = getValue(type, input, params);
-      // console.log(...item);
-      // console.log("----", ok, message, value);
+  describe("Failure", function() {
+    B.forEach((item: any) => {
+      it(`Builtin - ${item[0]} (${item[1]}) failure`, function() {
+        const type = item[0];
+        const input = item[1];
+        const params = item[2];
+        const { ok } = getValue(type, input, params);
+        // console.log(...item);
+        // console.log("----", ok, message, value);
+        expect(ok).to.equal(false);
+      });
+    });
+  });
+
+  describe("Error Code", function() {
+    const type = new ValueTypeManager();
+
+    it("parse failure", function() {
+      type.register("ParseFailure", {
+        parser: () => {
+          throw new Error("haha");
+        },
+      });
+      const { ok, message, code } = type.value("ParseFailure", 123);
       expect(ok).to.equal(false);
+      expect(message).to.equal("haha");
+      expect(code).to.equal("PARSE_FAILURE");
+    });
+
+    it("check failure", function() {
+      type.register("CheckFailure", {
+        checker: () => {
+          throw new Error("haha");
+        },
+      });
+      const { ok, message, code } = type.value("CheckFailure", 123);
+      expect(ok).to.equal(false);
+      expect(message).to.equal("haha");
+      expect(code).to.equal("CHECK_FAILURE");
+    });
+
+    it("format failure", function() {
+      type.register("FormatFailure", {
+        formatter: () => {
+          throw new Error("haha");
+        },
+        isDefaultFormat: true,
+      });
+      const { ok, message, code } = type.value("FormatFailure", 123);
+      expect(ok).to.equal(false);
+      expect(message).to.equal("haha");
+      expect(code).to.equal("FORMAT_FAILURE");
     });
   });
 });
