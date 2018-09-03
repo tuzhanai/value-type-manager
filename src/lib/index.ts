@@ -28,14 +28,14 @@ export interface IValueTypeOptions {
   isBuiltin?: boolean;
 }
 
-export interface ICheckResult {
+export interface IValueTypeCheckResult {
   /** 是否成功 */
   ok: boolean;
   /** 如果失败，则表示出错信息 */
   message: string;
 }
 
-export interface IValueResult extends ICheckResult {
+export interface IValueResult extends IValueTypeCheckResult {
   /** 值 */
   value: any;
 }
@@ -55,7 +55,7 @@ export class ValueTypeItem {
    * @param input 输入值
    * @param params 类型选项
    */
-  public check(input: any, params: any = {}): ICheckResult {
+  public check(input: any, params: any = {}): IValueTypeCheckResult {
     if (!this.options.checker) return { ok: true, message: "success" };
     const checker = this.options.checker;
     try {
@@ -137,7 +137,7 @@ export class ValueTypeManager {
    */
   public get(type: string): ValueTypeItem {
     const t = this.map.get(type);
-    assert.ok(t);
+    assert.ok(t, `value type "${type}" does not exists`);
     return t!;
   }
 
