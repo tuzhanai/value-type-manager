@@ -215,7 +215,7 @@ export default function registerBuiltinTypes(type: ValueTypeManager) {
         .sort();
     },
     checker: (v: any[]) => {
-      let ok = Array.isArray(v) && v.length > 0;
+      let ok = Array.isArray(v);
       v.forEach(n => {
         ok = ok && validator.isInt(String(n));
       });
@@ -229,7 +229,7 @@ export default function registerBuiltinTypes(type: ValueTypeManager) {
   type.register("StringArray", {
     parser: (v: any) => (Array.isArray(v) ? v : String(v).split(",")),
     checker: (v: any[]) => {
-      return Array.isArray(v) && v.length > 0;
+      return Array.isArray(v);
     },
     formatter: (arr: string[]) => arr.map(v => String(v).trim()),
     isDefaultFormat: true,
