@@ -8,10 +8,21 @@ import * as assert from "assert";
 import * as validator from "validator";
 import { ValueTypeManager } from "./index";
 
+/** 格式化 Boolean 类型 */
+function parseQueryBoolean(query: any, b: boolean) {
+  const str = String(query);
+  if (str === "1" || str === "true") {
+    return true;
+  } else if (str === "0" || str === "false") {
+    return false;
+  }
+  return b;
+}
+
 export default function registerBuiltinTypes(type: ValueTypeManager) {
   type.register("Boolean", {
     checker: (v: any) => typeof v === "boolean" || (typeof v === "string" && validator.isBoolean(v)),
-    formatter: (v: any) => String(v).toLowerCase() === "true",
+    formatter: (v: any) => typeof v === "boolean" ? v : parseQueryBoolean(v, !!v),
     description: "布尔值",
     tsType: "boolean",
     isBuiltin: true,
