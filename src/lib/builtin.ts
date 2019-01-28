@@ -212,7 +212,7 @@ export default function registerBuiltinTypes(type: ValueTypeManager) {
       return true;
     },
     description: "枚举类型",
-    tsType: "string",
+    tsType: "any",
     isBuiltin: true,
     isParamsRequired: true,
   });
