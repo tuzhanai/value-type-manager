@@ -7,16 +7,18 @@
 import * as assert from "assert";
 import registerBuiltinTypes from "./builtin";
 
+export type SWAGGER_TYPE = "string" | "number" | "integer" | "boolean" | "array" | "object";
+
 export interface IValueTypeOptions {
-  /** 检查方法 */
+  /** ② 检查方法 */
   checker?: ((v: any, p?: any) => boolean) | RegExp;
   /** 类型动态参数检查器 */
   paramsChecker?: (p: any) => boolean;
   /** 类型动态参数是否必须 */
   isParamsRequired?: boolean;
-  /** 解析方法 */
+  /** ① 解析方法 */
   parser?: (v: any) => any;
-  /** 格式化方法 */
+  /** ③ 格式化方法 */
   formatter?: (v: any) => any;
   /** 说明信息 */
   description?: string;
@@ -24,10 +26,13 @@ export interface IValueTypeOptions {
   isDefaultFormat?: boolean;
   /** 对应的TypeScript类型 */
   tsType?: string;
+  /** 对应的swagger 文档的类型 */
+  swaggerType?: SWAGGER_TYPE;
   /** 是否为系统内置的类型 */
   isBuiltin?: boolean;
 }
 
+// 值类型 检查结果信息
 export interface IValueTypeCheckResult {
   /** 是否成功 */
   ok: boolean;
@@ -36,7 +41,7 @@ export interface IValueTypeCheckResult {
   /** 错误代码 */
   code?: string;
 }
-
+// 值类型的值 检查结果信息
 export interface IValueResult extends IValueTypeCheckResult {
   /** 值 */
   value: any;
@@ -97,7 +102,11 @@ export class ValueTypeItem {
 
   /**
    * 检查参数，如果参数默认开启格式化，则格式化
-   * @param input
+   * 检查流程：
+   * 1: 解析 parse
+   * 2: 检查 check
+   * 3?: 格式化 formatter
+   * @param input 输入的值
    * @param params 类型选项
    * @param format 是否格式化，如果为undefined则使用默认配置
    */

@@ -11,13 +11,13 @@ const A = [
   ["Boolean", "true", { type: "Boolean", format: false }, "true"],
 
   // Date
-  ["Date", "2017-05-01", { type: "Date" }, "2017-05-01"],
   ["Date", date, { type: "Date" }, date],
 
   // String
   ["String", "1", { type: "String" }, "1"],
   ["TrimString", " 1 ", { type: "TrimString", format: false }, " 1 "],
   ["TrimString", " 1 ", { type: "TrimString" }, "1"],
+  ["NotEmptyString", "1", { type: "NotEmptyString" }, "1"],
 
   // Number
   ["Number", "1", { type: "Number" }, 1],
@@ -78,18 +78,19 @@ const B = [
   ["Integer", "-1.0", { type: "Integer" }],
   ["Integer", "Yourtion", { type: "ENUM", params: ["Hello", "World"] }],
   ["ENUM", "Yourtion", { type: "ENUM", params: ["Hello", "World"] }],
+  ["NotEmptyString", "", { type: "NotEmptyString" }],
 ];
 
-describe("test ValueTypeManager", function() {
+describe("test ValueTypeManager", function () {
   const manager = new ValueTypeManager();
 
   function getValue(type: string, input: any, { params, format }: any) {
     return manager.value(type, input, params, format);
   }
 
-  describe("Success", function() {
+  describe("Success", function () {
     A.forEach((item: any) => {
-      it(`Builtin - ${item[0]} (${item[1]}) success`, function() {
+      it(`Builtin - ${item[0]} (${item[1]}) success`, function () {
         const type = item[0];
         const input = item[1];
         const params = item[2];
@@ -104,9 +105,17 @@ describe("test ValueTypeManager", function() {
     });
   });
 
-  describe("Failure", function() {
+  it("Builtin - DateISOString Date success", function () {
+    const d = new Date();
+    const { ok, message, value } = getValue("Date", d.toJSON(), { type: "Date" });
+    expect(ok).to.equal(true);
+    expect(message).to.equal("success");
+    expect(value.toJSON()).to.equal(d.toJSON());
+  });
+
+  describe("Failure", function () {
     B.forEach((item: any) => {
-      it(`Builtin - ${item[0]} (${item[1]}) failure`, function() {
+      it(`Builtin - ${item[0]} (${item[1]}) failure`, function () {
         const type = item[0];
         const input = item[1];
         const params = item[2];
@@ -118,10 +127,10 @@ describe("test ValueTypeManager", function() {
     });
   });
 
-  describe("Error Code", function() {
+  describe("Error Code", function () {
     const type = new ValueTypeManager();
 
-    it("parse failure", function() {
+    it("parse failure", function () {
       type.register("ParseFailure", {
         parser: () => {
           throw new Error("haha");
@@ -133,7 +142,7 @@ describe("test ValueTypeManager", function() {
       expect(code).to.equal("PARSE_FAILURE");
     });
 
-    it("check failure", function() {
+    it("check failure", function () {
       type.register("CheckFailure", {
         checker: () => {
           throw new Error("haha");
@@ -145,7 +154,7 @@ describe("test ValueTypeManager", function() {
       expect(code).to.equal("CHECK_FAILURE");
     });
 
-    it("format failure", function() {
+    it("format failure", function () {
       type.register("FormatFailure", {
         formatter: () => {
           throw new Error("haha");
