@@ -59,7 +59,7 @@ export default function registerBuiltinTypes(type: ValueTypeManager) {
     isBuiltin: true,
     isDefaultFormat: true,
   });
-  
+
   type.register("NotEmptyString", {
     checker: (v: any) => typeof v === "string" && !validator.isEmpty(v),
     formatter: (v: string) => v.trim(),
@@ -283,23 +283,6 @@ export default function registerBuiltinTypes(type: ValueTypeManager) {
     description: "逗号分隔的字符串数组",
     tsType: "string[]",
     swaggerType: "array",
-    isBuiltin: true,
-  });
-
-  type.register("NullableString", {
-    checker: (v: any) => typeof v === "string" || v === null,
-    description: "可为null字符串",
-    tsType: "string | null",
-    swaggerType: "string",
-    isBuiltin: true,
-  });
-
-  type.register("NullableInteger", {
-    checker: (v: any) => validator.isInt(String(v)) || v === null,
-    formatter: (v: any) => Number(v),
-    description: "可为null整数",
-    tsType: "number | null",
-    swaggerType: "number",
     isBuiltin: true,
   });
 }

@@ -50,7 +50,7 @@ const A = [
   // Nullable
   ["NullableString", "1", { type: "NullableString" }, "1"],
   ["NullableString", null, { type: "NullableString" }, null],
-  ["NullableInteger", "1", { type: "NullableInteger" }, "1"],
+  ["NullableInteger", "1", { type: "NullableInteger" }, 1],
   ["NullableInteger", "1", { type: "NullableInteger", format: true }, 1],
   ["NullableInteger", 1, { type: "NullableInteger" }, 1],
   ["NullableInteger", null, { type: "NullableInteger" }, null],
@@ -105,12 +105,26 @@ describe("test ValueTypeManager", function () {
     });
   });
 
-  it("Builtin - DateISOString Date success", function () {
-    const d = new Date();
-    const { ok, message, value } = getValue("Date", d.toJSON(), { type: "Date" });
-    expect(ok).to.equal(true);
-    expect(message).to.equal("success");
-    expect(value.toJSON()).to.equal(d.toJSON());
+  describe("Nullable", function () {
+    const testSet = new Set(A.map((i) => i[0]).filter((i: any) => i.indexOf("Nullable") === -1));
+    testSet.forEach((type: any) => {
+      it(`Nullable - Nullable${type} success`, function () {
+        const { ok, message, value } = getValue(`Nullable${type}`, null, {});
+        expect(ok).to.equal(true);
+        expect(message).to.equal("success");
+        expect(value).to.null;
+      });
+    });
+  });
+
+  describe("Fixed", function () {
+    it("Builtin - DateISOString Date success", function () {
+      const d = new Date();
+      const { ok, message, value } = getValue("Date", d.toJSON(), { type: "Date" });
+      expect(ok).to.equal(true);
+      expect(message).to.equal("success");
+      expect(value.toJSON()).to.equal(d.toJSON());
+    });
   });
 
   describe("Failure", function () {

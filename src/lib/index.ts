@@ -2,6 +2,7 @@
  * @tuzhanai/value-type-manager
  *
  * @author Zongmin Lei <leizongmin@gmail.com>
+ * @author Yourtion Guo <yourtion@gmail.com>
  */
 
 import * as assert from "assert";
@@ -30,6 +31,8 @@ export interface IValueTypeOptions {
   swaggerType?: SWAGGER_TYPE;
   /** 是否为系统内置的类型 */
   isBuiltin?: boolean;
+  /** 能否为 null */
+  nullable?: boolean;
 }
 
 // 值类型 检查结果信息
@@ -41,6 +44,7 @@ export interface IValueTypeCheckResult {
   /** 错误代码 */
   code?: string;
 }
+
 // 值类型的值 检查结果信息
 export interface IValueResult extends IValueTypeCheckResult {
   /** 值 */
@@ -75,7 +79,14 @@ export class ValueTypeItem {
     if (!this.options.checker) return { ok: true, message: "success" };
     const checker = this.options.checker;
     try {
-      const ok = checker instanceof RegExp ? checker.test(input) : checker(input, params);
+      let ok: boolean;
+      if (this.options.nullable && input === null) {
+        ok = true;
+      } else if (checker instanceof RegExp) {
+        ok = checker.test(input);
+      } else {
+        ok = checker(input, params);
+      }
       return { ok, message: ok ? "success" : "failure", code: ok ? undefined : CODE_CHECK_FAILURE };
     } catch (err) {
       return { ok: false, message: err.message };
@@ -87,7 +98,7 @@ export class ValueTypeItem {
    * @param input 输入值
    */
   public parse(input: any): any {
-    if (!this.options.parser) return input;
+    if (!this.options.parser || (this.options.nullable && input === null)) return input;
     return this.options.parser(input);
   }
 
@@ -96,7 +107,7 @@ export class ValueTypeItem {
    * @param input 输入值
    */
   public format(input: any): any {
-    if (!this.options.formatter) return input;
+    if (!this.options.formatter || (this.options.nullable && input === null)) return input;
     return this.options.formatter(input);
   }
 
@@ -156,6 +167,10 @@ export class ValueTypeManager {
    */
   public register(type: string, options: IValueTypeOptions): this {
     this.map.set(type, new ValueTypeItem(options));
+    this.map.set(
+      `Nullable${type}`,
+      new ValueTypeItem({ ...options, nullable: true, tsType: `${options.tsType} | null` }),
+    );
     return this;
   }
 
